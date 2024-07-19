@@ -1,12 +1,12 @@
 from fastapi import FastAPI, HTTPException, APIRouter , Depends , Header
 from database.database import SessionLocal
-from src.model.user import User
+from src.model.user_model import User
 from src.model.otp import Otp
 from passlib.context import CryptContext
-from src.schemas.user1 import StuBase
+from src.schemas.user_schemas import StuBase
 from src.utils.otp import generate_otp,send_otp_email
-from src.schemas.user1 import User_OTP
-from src.schemas.user1 import OTP_Verify
+from src.schemas.user_schemas import User_OTP
+from src.schemas.user_schemas import OTP_Verify
 from datetime import datetime
 from src.utils.token import decode_token_user_id,decode_token_user_email,decode_token_user_name,logging_token
 

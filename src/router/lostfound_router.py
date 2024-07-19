@@ -1,13 +1,15 @@
 from fastapi import FastAPI, HTTPException, APIRouter , Depends , Header
 from database.database import SessionLocal
-from src.model.lf import lostfound
+from src.model.lostfound_model import lostfound
 from src.model.otp import Otp
 from passlib.context import CryptContext
-from src.schemas.lf1 import LostFoundData
+from src.schemas.lostfound_schemas import LostFoundData
 from src.utils.otp import generate_otp,send_otp_email
-from src.schemas.user1 import User_OTP
-from src.schemas.user1 import OTP_Verify
+from src.schemas.user_schemas import User_OTP
+from src.schemas.user_schemas import OTP_Verify
 from datetime import datetime
+from logs.log_config import logger
+
 
 lostfounds = APIRouter()
 Otp_router = APIRouter()
@@ -15,10 +17,11 @@ db = SessionLocal()
 
 pwd_context = CryptContext(schemes = ["bcrypt"] , deprecated = "auto")
 
-@lostfounds.post("/create_user_id", response_model=LostFoundData)
+@lostfounds.post("/creat_lostfound_item", response_model=LostFoundData)
 def create_user_id(stu: LostFoundData):
-    newUser = lostfound(
     
+    logger.info("enter lost detail")
+    newUser = lostfound(
     name = stu.name,
     mobile_No = stu.mobile_No,
     email = stu.email,
@@ -26,19 +29,23 @@ def create_user_id(stu: LostFoundData):
     item = stu.item,
     locationfound = stu.locationfound,
     description = stu.description,
-
- 
     )
+    logger.info("add lost detail")
     db.add(newUser)
+    logger.info("commit code")
     db.commit()
+    logger.success("lost detail added successfully")
     return stu
 
 
 @lostfounds.get("/lost_user_details", response_model=LostFoundData)
 def read_person(user_id : str):
+    logger.info("chekc user id and condition")
     stu = db.query(lostfound).filter(lostfound.id == user_id, lostfound.is_active==True , lostfound.is_deleted == False).first()
     if stu is None:
+        logger.error("item not found")
         raise HTTPException(status_code=404, detail="item not found")
+    logger.success("detail found successfully")
     return stu
 
 @lostfounds.get("/lostdetail",response_model=list[LostFoundData])

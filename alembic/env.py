@@ -16,9 +16,10 @@ if config.config_file_name is not None:
 
 from dotenv import load_dotenv
 from database.database import Base
+from src.model.lostfound_model import lostfound
+from src.model.lostItem import LostItemReports
 from src.model.otp import Otp
-from src.model.user import User
-from src.model.lf import lostfound
+from src.model.user_model import User
 import os
 load_dotenv()
 db_url = os.environ.get("DB_URL")
